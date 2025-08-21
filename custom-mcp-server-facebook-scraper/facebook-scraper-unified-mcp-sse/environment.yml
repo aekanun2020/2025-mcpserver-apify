@@ -1,0 +1,14 @@
+name: facebook-scraper-unified-mcp-sse
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - mcp>=1.2.0
+    - apify-client>=1.8.0
+    - httpx>=0.24.0
+    - fastapi>=0.104.0
+    - uvicorn>=0.24.0
+    - sse-starlette>=1.6.0
