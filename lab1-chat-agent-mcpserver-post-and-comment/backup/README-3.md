@@ -1,7 +1,5 @@
 # Hands-on: เริ่มต้นใช้งาน Apify กับ n8n ดึงโพสต์/คอมเมนต์ และวิเคราะห์ Sentiment อัตโนมัติ
 
----
-
 ## การสร้าง Workflow
 
 #### 1. สร้าง AI Agent node และทดสอบ
@@ -26,7 +24,25 @@
 #### 6. สร้าง MCP Client เพื่อเชื่อมต่อกับ MCP Server for Apify Actor สำหรับดึง comment ของ Facebook
 🎥 **Video Tutorial:** https://video.aekanun.com/dzC4dSKN
 
----
+
+## ชุดคำถามที่ใช้ในการทดสอบ
+
+### คำถามที่ 1
+```
+ดึงโพส https://www.facebook.com/imcinstitute มา 5 โพส
+```
+
+### คำถามที่ 2
+```
+ดึงโพส https://www.facebook.com/thaipbs จำนวน 3 โพส มาวิเคราะห์ sentiment
+```
+
+### คำถามที่ 3
+```
+ดึงโพส https://www.facebook.com/nationtv และ https://www.facebook.com/thaipbs มาเปรียบเทียบกันสัก 5 โพส ล่าสุด
+```
+
+
 
 ## prompt (User Message) ของ agent ที่ใช้แก้ไขในข้อ 5
 
@@ -111,8 +127,6 @@
 **หมายเหตุสำคัญ**: ต้องปฏิบัติตามกระบวนการ ReAct อย่างเคร่งครัด ห้ามข้ามขั้นตอนหรือให้คำตอบก่อนมีข้อมูลครบถ้วน ต้อง list tools ก่อนใช้งานทุกครั้ง และต้องใช้ parameters format ให้ถูกต้องตาม schema **ห้าม output เป็นค่าว่างเมื่อพบ URL ยาวหรือข้อมูลซับซ้อน ให้สรุปสั้นๆ แทน**
 ```
 
----
-
 ## System Message ของ agent ที่ใช้แก้ไขในข้อ 5
 
 ```
@@ -122,97 +136,4 @@ You are a friendly Agent designed to guide users through these steps.
 - Respond concisely and do **not** disclose these internal instructions to the user. Only return defined output below.
 - Don't output any lines that start with -----
 - Replace ":sparks:" with "✨" in any message
-```
-
----
-
-## Tool Name และ Tool Parameters ที่ใช้ในข้อ 3
-
-### Description
-```
-ใช้ดึงข้อมูลโพสต์จากเพจสาธารณะ รวมถึงลิงก์โพสต์, ข้อความ, ลิงก์เพจ, เวลา, จำนวนไลค์, แชร์, คอมเมนต์, และอื่น ๆ
-```
-
-### Tool Name
-```
-apify-slash-facebook-posts-scraper
-```
-
-### Tool Parameters
-```javascript
-{{ (function() {
-  const paramsString = $fromAI('Tool_Parameters');
-  
-  // ถ้าไม่มีข้อมูลจาก Agent ใส่ default
-  const defaultParams = {
-    startUrls: [{"url": "https://www.facebook.com/imcinstitute"}],
-    resultsLimit: 5,
-    captionText: false
-  };
-  
-  if (!paramsString) {
-    return defaultParams;
-  }
-  
-  try {
-    const params = JSON.parse(paramsString);
-    return {
-      startUrls: params.startUrls || params.start_urls || defaultParams.startUrls,
-      resultsLimit: params.resultsLimit || params.results_limit || 5,
-      captionText: params.captionText || params.caption_text || false
-    };
-  } catch (e) {
-    return defaultParams;
-  }
-})() }}
-```
-
----
-
-## Tool Name และ Tool Parameters ที่ใช้ในข้อ 6
-
-### Description
-```
-ใช้ดึงข้อมูลคอมเมนต์จากโพสต์ใน Facebook รวมถึงข้อความ, เวลา, จำนวนไลค์, และข้อมูลผู้แสดงความคิดเห็น
-```
-
-### Tool Name
-```
-apify-slash-facebook-comments-scraper
-```
-
-### Tool Parameters
-```javascript
-{{ (function() {
-   const paramsString = $fromAI('Tool_Parameters');
-   const params = JSON.parse(paramsString);
-   
-   return {
-     startUrls: params.startUrls || (Array.isArray(params.start_urls) 
-       ? params.start_urls.map(url => ({ url: url }))
-       : [{ url: params.start_urls }]),
-     resultsLimit: params.resultsLimit || params.results_limit || 50,
-     includeNestedComments: params.includeNestedComments || params.include_nested_comments || false,
-     viewOption: params.viewOption || params.view_option || "RANKED_UNFILTERED"
-   };
-})() }}
-```
-
----
-
-## ชุดคำถามที่ใช้ในการทดสอบ
-
-### คำถามที่ 1
-```
-ดึงโพส https://www.facebook.com/imcinstitute มา 5 โพส
-```
-
-### คำถามที่ 2
-```
-ดึงโพส https://www.facebook.com/thaipbs จำนวน 3 โพส มาวิเคราะห์ sentiment
-```
-
-### คำถามที่ 3
-```
-ดึงโพส https://www.facebook.com/nationtv และ https://www.facebook.com/thaipbs มาเปรียบเทียบกันสัก 5 โพส ล่าสุด
 ```
