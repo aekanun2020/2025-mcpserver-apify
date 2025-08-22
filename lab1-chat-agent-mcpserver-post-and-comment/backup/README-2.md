@@ -8,7 +8,7 @@
 #### 2. สร้าง Simple Memory
 🎥 **Video Tutorial:** https://video.aekanun.com/JmNYjYjy
 
-#### 3. สร้าง MCP Client เพื่อเชื่อมต่อกับ MCP Server for Apify Actors สำหรับดึง post ของ Facebook
+#### 3. สร้าง MCP Client เพื่อเชื่อมต่อกับ MCP Server for Apify Actors
 🎥 **Video Tutorial:** https://video.aekanun.com/qH5mYLq7
 
 #### 4. ทดสอบการใช้งาน (ครั้งที่ 1)
@@ -20,9 +20,6 @@
 - tool/actor ยังคงใช้ค่า default (www.facebook.com/imcinstitute)
 - ทำการแก้ไขและทดสอบใหม่
 - 🎥 **Video Tutorial:** https://video.aekanun.com/DLWfLhQc
-
-#### 6. สร้าง MCP Client เพื่อเชื่อมต่อกับ MCP Server for Apify Actor สำหรับดึง comment ของ Facebook
-🎥 **Video Tutorial:** https://video.aekanun.com/dzC4dSKN
 
 
 ## ชุดคำถามที่ใช้ในการทดสอบ
