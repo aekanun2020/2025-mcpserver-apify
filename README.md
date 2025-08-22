@@ -22,7 +22,8 @@
 
 (2) สร้าง credential ใน n8n
 
-    (2.1) ชื่อ MCP Client (STDIO) for native mcp server apify ; Command: npx ; Arguments: -y @apify/actors-mcp-server --actors apify/facebook-posts-scraper,apify/facebook-comments-scraper ; Environments: APIFY_TOKEN=xxxxxxx
-    (2.2) ชื่อ OpenAi account ; API Key: xxxxxxx ; Base URL: https://openrouter.ai/api/v1
+    (2.1) ชื่อ MCP Client (STDIO) for native mcp server apify ; Command: npx ; Arguments: -y @apify/actors-mcp-server --actors apify/facebook-posts-scraper,apify/facebook-comments-scraper ; Environments: APIFY_TOKEN=xxxxxxx ดูวีดีโอการทำ https://video.aekanun.com/FhrF8NGF
+
+    (2.2) ชื่อ OpenAi account ; API Key: xxxxxxx ; Base URL: https://openrouter.ai/api/v1 ดูวีดีโอการทำ https://video.aekanun.com/XcTf47pX
     (2.3)
     (2.4) ชื่อ Airtable Personal Access Token account ; Access Token : xxxxxxx ; Make sure you enabled the following scopes for your token: data.records:read, data.records:write, schema.bases:read
