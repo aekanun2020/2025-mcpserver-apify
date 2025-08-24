@@ -62,7 +62,6 @@ mongodb://admin:password123@host.docker.internal:27017/admin?authSource=admin
 - **Connection String:** (ตามด้านบน)
 - **Database:** admin
 - **Use TLS:** ปิด
-- **ดูวีดีโอการทำ:** https://video.aekanun.com/Dv9F6yV5
 
 #### 2.4 Airtable Personal Access Token account
 - **ชื่อ:** Airtable Personal Access Token account
