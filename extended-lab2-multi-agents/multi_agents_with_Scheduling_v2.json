@@ -1,0 +1,457 @@
+{
+  "name": "multi-agents-with-Scheduling-v2",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -600,
+        360
+      ],
+      "id": "53d26835-a7ca-4051-9962-816b318d9daf",
+      "name": "When chat message received",
+      "webhookId": "3860f7a4-d151-4b44-9ac1-577cbbca1c63"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# บทบาทและความเชี่ยวชาญ (Your Role & Expertise)\nคุณเป็น AI Facebook Data Assistant ระดับผู้เชี่ยวชาญที่มีความสามารถในการรวบรวม วิเคราะห์ และนำเสนอข้อมูลจาก Facebook อย่างมีระบบและน่าเชื่อถือ\n\n# กระบวนการทำงาน ReAct (ReAct Working Process)\nใช้วิธีการ ReAct (Reasoning + Acting) ในทุกคำถาม:\n\n## ขั้นตอนที่ 1: THOUGHT\n- วิเคราะห์คำถามและวัตถุประสงค์ทางธุรกิจ\n- ระบุข้อมูลที่จำเป็นต้องดึงมาอย่างเฉพาะเจาะจง\n- วางแผนลำดับการดึงข้อมูลที่เหมาะสม\n- ประเมินความเป็นไปได้และข้อจำกัด\n\n## ขั้นตอนที่ 2: ACTION\n- List tools ที่พร้อมใช้งานเพื่อตรวจสอบ schema และ parameters\n- เลือกและใช้เครื่องมือที่เหมาะสมตาม schema ที่ได้รับ\n- ใส่ parameters ที่ถูกต้องและครบถ้วนตาม format ที่กำหนด\n\n## ขั้นตอนที่ 3: OBSERVATION\n- วิเคราะห์ผลลัพธ์ที่ได้รับอย่างละเอียด\n- ตรวจสอบความถูกต้อง ความครบถ้วน และความน่าเชื่อถือ\n- ระบุข้อมูลที่ยังขาดหายไปหรือต้องการเพิ่มเติม\n- หากข้อมูลไม่ครบ กลับไป THOUGHT เพื่อวางแผนเพิ่มเติม\n\n## ขั้นตอนที่ 4: ANSWER\n- นำเสนอคำตอบที่สมบูรณ์และมีโครงสร้างชัดเจน\n- อ้างอิงแหล่งที่มาและวันที่ของข้อมูลทุกชิ้น\n- ให้ insights และข้อเสนะแนะทางธุรกิจ\n- ระบุข้อจำกัดหรือคำเตือนหากจำเป็น\n\n# ความรับผิดชอบหลัก (Core Responsibilities)\n1. **การแปลความต้องการ**: แปลคำถามทางธุรกิจให้เป็น parameters ที่เหมาะสม\n2. **การเลือกแหล่งข้อมูล**: เลือก Facebook pages/posts ที่เกี่ยวข้องและน่าเชื่อถือ\n3. **การกำหนดขอบเขต**: กำหนดจำนวนและตัวกรองที่เหมาะสมตามวัตถุประสงค์\n4. **การวิเคราะห์ข้อมูล**: วิเคราะห์และสังเคราะห์ข้อมูลอย่างลึกซึ้ง\n5. **การนำเสนอผลลัพธ์**: นำเสนอใน format ที่เข้าใจง่ายและใช้งานได้\n\n# การใช้งาน Facebook Tools อย่างถูกต้อง\n## สำหรับ apify-slash-facebook-posts-scraper:\n{\n \"startUrls\": [{\"url\": \"https://www.facebook.com/pagename\"}],\n \"resultsLimit\": 20,\n \"captionText\": false\n // ให้ AI กำหนดช่วงเวลาเองตามความเหมาะสม\n}\n\n## สำหรับ apify-slash-facebook-comments-scraper:\n{\n \"startUrls\": [{\"url\": \"https://www.facebook.com/pagename/posts/12345\"}],\n \"resultsLimit\": 50,\n \"includeNestedComments\": false,\n \"viewOption\": \"RANKED_UNFILTERED\"\n}\n\n# หลักการสำคัญในการใช้ Tools:\n1. **startUrls ต้องเป็น array ของ objects** เสมอ โดยแต่ละ object มี key \"url\"\n2. **resultsLimit เป็น integer** ไม่ใช่ string\n3. **captionText และ includeNestedComments เป็น boolean** (true/false)\n4. **วันที่ใช้ format YYYY-MM-DD** หรือ relative format เช่น \"7 days\"\n\n# การจัดการข้อมูล Comments และ URLs (สำคัญมาก)\n1. **ย่อ URLs ยาวๆ**: หาก comment มี video link หรือ URL ที่มี query parameters ยาว ให้ย่อเป็น \"facebook.com/video/[ID]\" หรือ \"[ชื่อเว็บ]/...\"\n2. **จำกัดความยาว comment**: แสดงเฉพาะส่วนสำคัญของ comment ไม่เกิน 100 ตัวอักษร\n3. **ตัดส่วนที่ไม่จำเป็น**: ไม่ต้องแสดง query parameters หรือ tracking codes ใน URL\n4. **สรุปสั้นๆ**: หาก comment ยาวหรือมี URL เยอะ ให้สรุปเป็น \"คอมเมนต์เกี่ยวกับ [หัวข้อ]\" แทน\n5. **หลีกเลี่ยง output ว่าง**: หากพบข้อมูลที่ซับซ้อน ให้สรุปสั้นๆ แทนที่จะไม่ตอบ\n\n# การจัดการข้อผิดพลาด (Error Handling)\nหากเครื่องมือส่งคืนข้อผิดพลาด:\n1. อธิบายปัญหาและสาเหตุที่เป็นไปได้\n2. เสนอทางเลือกหรือวิธีแก้ไขหากมี\n3. ระบุข้อจำกัดของข้อมูลที่ได้รับชัดเจน\n4. ไม่สร้างข้อมูลสมมติหรือคาดเดา\n\n# คำถามจากผู้ใช้\n{{$json[\"original_question\"]}}\n\n**หมายเหตุสำคัญ**: ต้องปฏิบัติตามกระบวนการ ReAct อย่างเคร่งครัด ห้ามข้ามขั้นตอนหรือให้คำตอบก่อนมีข้อมูลครบถ้วน ต้อง list tools ก่อนใช้งานทุกครั้ง และต้องใช้ parameters format ให้ถูกต้องตาม schema **ห้าม output เป็นค่าว่างเมื่อพบ URL ยาวหรือข้อมูลซับซ้อน ให้สรุปสั้นๆ แทน**",
+        "options": {
+          "systemMessage": "=You are a Facebook Data Assistant. After using tools and getting results, always provide a complete response based on the tool outputs. Never return empty output as following:\n[\n  {\n    \"output\": \"\"\n  }\n]",
+          "maxIterations": 30
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -380,
+        360
+      ],
+      "id": "5955efcb-8896-4eb9-bb6e-10e46792b086",
+      "name": "AI Agent",
+      "alwaysOutputData": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-120b",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-120b"
+        },
+        "options": {
+          "maxTokens": 8000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        580
+      ],
+      "id": "290e11bf-4819-410e-abbd-3eff99ca43c0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PcWnynu1MNa27G22",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -280,
+        580
+      ],
+      "id": "77c80dbe-a46a-4bbb-b2a3-a29f23df7a69",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "ใช้ดึงข้อมูลโพสต์จากเพจสาธารณะ รวมถึงลิงก์โพสต์, ข้อความ, ลิงก์เพจ, เวลา, จำนวนไลค์, แชร์, คอมเมนต์, และอื่น ๆ",
+        "operation": "executeTool",
+        "toolName": "apify-slash-facebook-posts-scraper",
+        "toolParameters": "={{ (function() {\n  const paramsString = $fromAI('Tool_Parameters');\n  \n  // ถ้าไม่มีข้อมูลจาก Agent ใส่ default\n  const defaultParams = {\n    startUrls: [{\"url\": \"https://www.facebook.com/imcinstitute\"}],\n    resultsLimit: 5,\n    captionText: false\n  };\n  \n  if (!paramsString) {\n    return defaultParams;\n  }\n  \n  try {\n    const params = JSON.parse(paramsString);\n    return {\n      startUrls: params.startUrls || params.start_urls || defaultParams.startUrls,\n      resultsLimit: params.resultsLimit || params.results_limit || 5,\n      captionText: params.captionText || params.caption_text || false\n    };\n  } catch (e) {\n    return defaultParams;\n  }\n})() }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        580
+      ],
+      "id": "fa84a3d5-c0b4-436b-8e5d-01c2082623b4",
+      "name": "MCP Client",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "EWhqNyoh1xV4X6iv",
+          "name": "MCP Client (STDIO) for native mcp server apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "ใช้ดึงข้อมูลคอมเมนต์จากโพสต์ใน Facebook รวมถึงข้อความ, เวลา, จำนวนไลค์, และข้อมูลผู้แสดงความคิดเห็น",
+        "operation": "executeTool",
+        "toolName": "apify-slash-facebook-comments-scraper",
+        "toolParameters": "={{ (function() {\n   const paramsString = $fromAI('Tool_Parameters');\n   const params = JSON.parse(paramsString);\n   \n   return {\n     startUrls: params.startUrls || (Array.isArray(params.start_urls) \n       ? params.start_urls.map(url => ({ url: url }))\n       : [{ url: params.start_urls }]),\n     resultsLimit: params.resultsLimit || params.results_limit || 50,\n     includeNestedComments: params.includeNestedComments || params.include_nested_comments || false,\n     viewOption: params.viewOption || params.view_option || \"RANKED_UNFILTERED\"\n   };\n})() }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        40,
+        580
+      ],
+      "id": "83f47a84-46dd-431a-b628-5c263b7c5343",
+      "name": "MCP Client1",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "EWhqNyoh1xV4X6iv",
+          "name": "MCP Client (STDIO) for native mcp server apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=คุณเป็น data engineer ที่จะรับผลลัพธ์จาก AI agent ก่อนหน้ามาประมวลผล\nInput ที่ได้รับ: {{ $('AI Agent').first().json.output }}\n\nงานของคุณ: แปลงข้อมูลนี้เป็น JSON object ที่เหมาะสมสำหรับ MongoDB\n\nกรุณา return เฉพาะ JSON object โดยตรง ไม่ต้องมี markdown code blocks หรือคำอธิบาย\n\nJSON structure ที่ต้องการ:\n1. มีโครงสร้างที่ชัดเจน\n2. เหมาะสำการเก็บใน MongoDB\n3. รองรับการ query ได้อย่างมีประสิทธิภาพ",
+        "options": {
+          "systemMessage": "=คุณเป็น data engineer ทำหน้าที่สร้าง valid JSON object เพื่อใช้นำเข้า MongoDB\n\nกฎสำคัญ:\n- return เฉพาะ valid JSON object เท่านั้น\n- ห้ามใส่คำอธิบาย markdown หรือข้อความใดๆ\n- ตรวจสอบ JSON syntax ให้ถูกต้อง (comma, quotes, brackets)\n- ห้าม wrap ด้วย ```json``` หรือ array\n\nตัวอย่าง output ที่ถูกต้อง:\n{\"_id\": \"analysis_001\", \"data\": {...}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -20,
+        360
+      ],
+      "id": "392e9053-5ed8-4c22-8799-be1b853f7e14",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "anthropic/claude-sonnet-4",
+          "mode": "list",
+          "cachedResultName": "anthropic/claude-sonnet-4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        580
+      ],
+      "id": "5a740148-436f-4b88-a6cc-826e2b227b9a",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "PcWnynu1MNa27G22",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "analytics",
+        "fields": "={{ Object.keys($json).join(',') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        340
+      ],
+      "id": "9571e113-462d-4346-9978-2f4a0c71e2de",
+      "name": "MongoDB",
+      "credentials": {
+        "mongoDb": {
+          "id": "y51OQQpvmvIw4Pi9",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and parse JSON from AI Agent output\nconst aiOutput = items[0].json.output;\nconst parsedData = JSON.parse(aiOutput);\n\n// เพิ่ม Unix timestamp เป็น _id สำหรับ MongoDB\nparsedData._id = Date.now();\n\nreturn [{ json: parsedData }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        360
+      ],
+      "id": "2a2f4b75-718d-4fc2-a90a-0c32eb2bd9f3",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2966067a-7bb6-4316-8ad9-2b7681c7e0b9",
+              "leftValue": "={{$json[\"output\"]}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f05d05a7-67b8-4b41-9980-de6f78d8bd05",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\n// ตรวจสอบว่าเป็นรอบแรกหรือไม่\nif (!staticData.current_session_data) {\n    // รอบแรก: เก็บข้อมูลทั้งหมดจาก input\n    staticData.current_session_data = {\n        original_question: $json[\"chatInput\"],\n        sessionId: $json[\"userId\"] || \"default-session\",\n        startTime: new Date().toISOString()\n    };\n}\n\n// ส่งออกข้อมูลที่คงอยู่ทุกรอบ\nreturn [{\n    sessionId: staticData.current_session_data.sessionId,\n    original_question: staticData.current_session_data.original_question\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        160
+      ],
+      "id": "e83062df-99a0-40ac-b505-9379d4dfd712",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1040,
+        340
+      ],
+      "id": "f4f56439-cc2c-4463-a04a-690e669c09a6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code node สำหรับสุ่มเลือกคำถาม\nconst questions = [\n  \"ดึงโพส https://www.facebook.com/nationtv และ https://www.facebook.com/thaipbs มาเปรียบเทียบกัน 1 โพสล่าสุด พร้อม comment 5 comment\",\n  \"วิเคราะห์ engagement ของ https://www.facebook.com/natenapa.nate โพส 5 โพสล่าสุด\",\n  \"ตรวจสอบ sentiment ของคอมเมนต์ใน https://www.facebook.com/imcinstitute โพส 3 โพสล่าสุด\",\n  \"เปรียบเทียบ engagement ระหว่าง https://www.facebook.com/natenapa.nate และ https://www.facebook.com/Lost.Somewhere.Together ภายใต้ 5 โพสล่าสุด\"\n];\n\n// สุ่มเลือกคำถาม หรือใช้แบบเรียงตามลำดับ\nconst currentHour = new Date().getHours();\nconst questionIndex = currentHour % questions.length; // หมุนเวียนตามชั่วโมง\nconst selectedQuestion = questions[questionIndex];\n\n// สร้าง session ID แบบ unique\nconst sessionId = `facebook-analysis-${new Date().toISOString().split('T')[0]}-${questionIndex}`;\n\n// ส่งข้อมูลไปยัง Agent\nreturn [{\n  json: {\n    chatInput: selectedQuestion,\n    sessionId: sessionId, // เพิ่ม sessionId ตรงนี้\n    timestamp: new Date().toISOString(),\n    questionIndex: questionIndex,\n    executionType: \"scheduled\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -820,
+        340
+      ],
+      "id": "7ad9145d-5734-4389-9cc9-9e6898bea47e",
+      "name": "Code2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d326ce9b-190c-4b8c-a041-c1b66b2e1e62",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a8766c5a192ec1c92124148bf1a18f26ac83d30823524bb8618e3d27bd6fad3"
+  },
+  "id": "xrOox29zaAGgBuxe",
+  "tags": [
+    {
+      "createdAt": "2025-08-25T09:07:49.909Z",
+      "updatedAt": "2025-08-25T09:07:49.909Z",
+      "id": "SsnkpT9LPydiQbKZ",
+      "name": "statble"
+    },
+    {
+      "createdAt": "2025-08-25T12:43:48.692Z",
+      "updatedAt": "2025-08-25T12:43:48.692Z",
+      "id": "gA2ucrGZ6nslXl2r",
+      "name": "tested@25Aug2025"
+    }
+  ]
+}
