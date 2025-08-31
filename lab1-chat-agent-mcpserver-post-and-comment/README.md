@@ -204,7 +204,7 @@ apify-slash-facebook-comments-scraper
 
 ### คำถามที่ 1
 ```
-ดึงโพส https://www.facebook.com/imcinstitute มา 5 โพส
+ดึงโพส https://www.facebook.com/ntcfanclub มา 5 โพส
 ```
 
 ### คำถามที่ 2
