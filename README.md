@@ -68,10 +68,3 @@ mongodb://admin:password123@host.docker.internal:27017/admin?authSource=admin
 - **Use TLS:** ปิด
 - **ดูวีดีโอการทำ:** https://video.aekanun.com/Dv9F6yV5
 
-#### 2.4 Airtable Personal Access Token account
-- **ชื่อ:** Airtable Personal Access Token account
-- **Access Token:** `xxxxxxx` ซึ่งผู้สอนจะแจ้งใน class โดยทุกคนจะใช้ Airtable ร่วมกันให้ได้ในเบื้องต้นก่อน หลังจากนั้นค่อยปรับเปลี่ยนตามความสนใจ (https://airtable.com/create/tokens/new)
-- **หมายเหตุ:** Make sure you enabled the following scopes for your token:
-  - `data.records:read`
-  - `data.records:write`
-  - `schema.bases:read`
