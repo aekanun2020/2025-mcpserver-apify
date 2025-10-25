@@ -11,6 +11,7 @@
 🎥 **Video Tutorial:** https://video.aekanun.com/JmNYjYjy
 
 #### 3. สร้าง MCP Client เพื่อเชื่อมต่อกับ MCP Server for Apify Actors สำหรับดึง post ของ Facebook
+- ทำตาม[หัวข้อ Tool Name และ Tool Parameters](#tool-name-และ-tool-parameters-ที่ใช้ในข้อ-3)
 🎥 **Video Tutorial:** https://video.aekanun.com/qH5mYLq7
 
 #### 4. ทดสอบการใช้งาน (ครั้งที่ 1)
