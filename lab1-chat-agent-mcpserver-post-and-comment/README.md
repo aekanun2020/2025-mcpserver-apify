@@ -15,7 +15,7 @@
 - การปรับแต่งค่าการทำงานของ node ให้ทำตาม [หัวข้อ Tool Name และ Tool Parameters ที่ใช้ในข้อ 3](#tool-name-และ-tool-parameters-ที่ใช้ในข้อ-3)
 
 #### 4. ทดสอบการใช้งาน ครั้งที่ 1
-- เป็นการทดสอบโดยไม่เปลี่ยน prompt ของ agent (ใช้ default prompt)
+- เป็นการทดสอบโดยใช้คำถามที่ 1 และใช้ default prompt
 - คำถามที่ 1
 ```
 ดึงโพส https://www.facebook.com/imcinstitute มา 5 โพส
