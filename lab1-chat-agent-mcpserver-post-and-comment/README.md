@@ -214,20 +214,3 @@ apify-slash-facebook-comments-scraper
 ```
 
 ---
-
-## ชุดคำถามที่ใช้ในการทดสอบ
-
-### คำถามที่ 1
-```
-ดึงโพส https://www.facebook.com/imcinstitute มา 5 โพส
-```
-
-### คำถามที่ 2
-```
-ดึงโพส https://www.facebook.com/thaipbs จำนวน 3 โพส มาวิเคราะห์ sentiment
-```
-
-### คำถามที่ 3
-```
-ดึงโพส https://www.facebook.com/nationtv และ https://www.facebook.com/thaipbs มาเปรียบเทียบกันสัก 5 โพส ล่าสุด
-```
