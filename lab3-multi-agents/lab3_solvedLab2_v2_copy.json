@@ -1,0 +1,462 @@
+{
+  "name": "lab3-solvedLab2-v2 copy",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -340,
+        440
+      ],
+      "id": "4d0daf06-f99c-4a5c-982b-bab82879ba1b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2966067a-7bb6-4316-8ad9-2b7681c7e0b9",
+              "leftValue": "={{$json[\"output\"]}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "15d07b01-e064-41cf-b754-9992bdc04f7f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=คำถามจากผู้ใช้: {{$json[\"original_question\"]}}\n\n\nคำตอบจาก AI Agent แรกซึ่งทำหน้าที่วิเคราะห์และสรุปคำตอบ:  {{ $('Facebook Scraper Agent ').first().json.output }}",
+        "options": {
+          "systemMessage": "=คุณเป็นนักนำเสนอข้อมูลมืออาชีพที่รับข้อมูลการวิเคราะห์จาก AI agent แรกมานำเสนอให้เข้าใจง่าย\n\nข้อกำหนด:\n- นำเสนอข้อมูลเป็นภาษาไทยที่อ่านง่าย กระชับ ชัดเจน และเกี่ยวข้องกับคำถามโดยตรง\n- จัดหมวดหมู่ข้อมูลเป็นหัวข้อที่เข้าใจได้ทันที\n- เน้นประเด็นสำคัญและข้อสรุปที่ actionable\n- ใช้ bullet points, หัวข้อย่อย หรือตารางตามความเหมาะสม\n- ใช้ emoji การเน้นข้อความ การจัดรูปแบบอักษร เพื่อดึงดูดความสนใจ\n\nการจัดการข้อมูล:\n- ใช้เฉพาะข้อมูลที่ได้รับจาก agent แรก\n- ห้ามเพิ่มเติมข้อมูลหรือตีความเกินจากที่มี\n- ห้ามสร้างข้อมูลหรือข้อสรุปที่ไม่มีในต้นฉบับ\n- หากข้อมูลไม่ครบถ้วน ให้ระบุชัดเจนว่าขาดข้อมูลอะไร\n\nรูปแบบการนำเสนอ:\n- เริ่มด้วยสรุปผลลัพธ์หลักใน 1-2 ประโยค\n- จัดลำดับข้อมูลตามความสำคัญ\n- ใช้ภาษาที่ผู้บริหารเข้าใจได้ง่าย\n- ปิดท้ายด้วย next actions ที่ชัดเจน\n\n# รูปแบบ Output ที่ต้องการ (Output Format)\n\n**สำคัญมาก**: คำตอบของคุณต้องมี 2 ส่วน\n\n## ส่วนที่ 1: สรุปสั้นๆ สำหรับผู้ใช้\n- เขียนเป็นประโยคสั้นๆ อธิบายผลลัพธ์\n\n## ส่วนที่ 2: Structured JSON Data (บังคับ)\nต้องมี JSON block นี้เสมอ ห้ามใส่ markdown table, emoji, หรือ formatting อื่นใน JSON:\n```json\n{\n  \"pages\": [\n    {\n      \"page_name\": \"ชื่อเพจ\",\n      \"posts\": [\n        {\n          \"post_time\": \"ISO datetime\",\n          \"text\": \"ข้อความโพสต์\",\n          \"likes\": 0,\n          \"comments_count\": 0,\n          \"shares\": 0,\n          \"media_type\": \"video/photo/text\"\n        }\n      ],\n      \"posts_count\": 1,\n      \"total_likes\": 0,\n      \"total_comments\": 0,\n      \"total_shares\": 0,\n      \"total_engagement\": 0,\n      \"average_engagement\": 0\n    }\n  ],\n  \"insights\": [\n    \"ข้อสังเกตที่ 1\",\n    \"ข้อสังเกตที่ 2\"\n  ],\n  \"recommendations\": [\n    \"คำแนะนำที่ 1\",\n    \"คำแนะนำที่ 2\"\n  ]\n}\n```"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        280,
+        220
+      ],
+      "id": "8bb20fc8-2b67-4176-9569-cf7fce0c8d7f",
+      "name": "Data Engineer Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "ใช้ดึงข้อมูลโพสต์จากเพจสาธารณะ รวมถึงลิงก์โพสต์, ข้อความ, ลิงก์เพจ, เวลา, จำนวนไลค์, แชร์, คอมเมนต์, และอื่น ๆ",
+        "operation": "executeTool",
+        "toolName": "apify-slash-facebook-posts-scraper",
+        "toolParameters": "={{ (function() {\n  const paramsString = $fromAI('Tool_Parameters');\n  \n  // ถ้าไม่มีข้อมูลจาก Agent ใส่ default\n  const defaultParams = {\n    startUrls: [{\"url\": \"https://www.facebook.com/imcinstitute\"}],\n    resultsLimit: 5,\n    captionText: false\n  };\n  \n  if (!paramsString) {\n    return defaultParams;\n  }\n  \n  try {\n    const params = JSON.parse(paramsString);\n    return {\n      startUrls: params.startUrls || params.start_urls || defaultParams.startUrls,\n      resultsLimit: params.resultsLimit || params.results_limit || 5,\n      captionText: params.captionText || params.caption_text || false\n    };\n  } catch (e) {\n    return defaultParams;\n  }\n})() }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        440
+      ],
+      "id": "dfb56eb2-7688-40c1-9429-d95db25bbfc6",
+      "name": "MCP Client for scraping posts",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "vD0aixLUWsgjIOGU",
+          "name": "MCP Client (STDIO) for native mcp server apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# บทบาทและความเชี่ยวชาญ (Your Role & Expertise)\nคุณเป็น AI Facebook Data Assistant ระดับผู้เชี่ยวชาญที่มีความสามารถในการรวบรวม วิเคราะห์ และนำเสนอข้อมูลจาก Facebook อย่างมีระบบและน่าเชื่อถือ\n\n# กระบวนการทำงาน ReAct (ReAct Working Process)\nใช้วิธีการ ReAct (Reasoning + Acting) ในทุกคำถาม:\n\n## ขั้นตอนที่ 1: THOUGHT\n- วิเคราะห์คำถามและวัตถุประสงค์ทางธุรกิจ\n- ระบุข้อมูลที่จำเป็นต้องดึงมาอย่างเฉพาะเจาะจง\n- วางแผนลำดับการดึงข้อมูลที่เหมาะสม\n- ประเมินความเป็นไปได้และข้อจำกัด\n\n## ขั้นตอนที่ 2: ACTION\n- List tools ที่พร้อมใช้งานเพื่อตรวจสอบ schema และ parameters\n- เลือกและใช้เครื่องมือที่เหมาะสมตาม schema ที่ได้รับ\n- ใส่ parameters ที่ถูกต้องและครบถ้วนตาม format ที่กำหนด\n\n## ขั้นตอนที่ 3: OBSERVATION\n- วิเคราะห์ผลลัพธ์ที่ได้รับอย่างละเอียด\n- ตรวจสอบความถูกต้อง ความครบถ้วน และความน่าเชื่อถือ\n- ระบุข้อมูลที่ยังขาดหายไปหรือต้องการเพิ่มเติม\n- หากข้อมูลไม่ครบ กลับไป THOUGHT เพื่อวางแผนเพิ่มเติม\n\n## ขั้นตอนที่ 4: ANSWER\n- นำเสนอคำตอบที่สมบูรณ์และมีโครงสร้างชัดเจน\n- อ้างอิงแหล่งที่มาและวันที่ของข้อมูลทุกชิ้น\n- ให้ insights และข้อเสนะแนะทางธุรกิจ\n- ระบุข้อจำกัดหรือคำเตือนหากจำเป็น\n\n# ความรับผิดชอบหลัก (Core Responsibilities)\n1. **การแปลความต้องการ**: แปลคำถามทางธุรกิจให้เป็น parameters ที่เหมาะสม\n2. **การเลือกแหล่งข้อมูล**: เลือก Facebook pages/posts ที่เกี่ยวข้องและน่าเชื่อถือ\n3. **การกำหนดขอบเขต**: กำหนดจำนวนและตัวกรองที่เหมาะสมตามวัตถุประสงค์\n4. **การวิเคราะห์ข้อมูล**: วิเคราะห์และสังเคราะห์ข้อมูลอย่างลึกซึ้ง\n5. **การนำเสนอผลลัพธ์**: นำเสนอใน format ที่เข้าใจง่ายและใช้งานได้\n\n# การใช้งาน Facebook Tools อย่างถูกต้อง\n## สำหรับ apify-slash-facebook-posts-scraper:\n{\n \"startUrls\": [{\"url\": \"https://www.facebook.com/pagename\"}],\n \"resultsLimit\": 20,\n \"captionText\": false\n // ให้ AI กำหนดช่วงเวลาเองตามความเหมาะสม\n}\n\n## สำหรับ apify-slash-facebook-comments-scraper:\n{\n \"startUrls\": [{\"url\": \"https://www.facebook.com/pagename/posts/12345\"}],\n \"resultsLimit\": 50,\n \"includeNestedComments\": false,\n \"viewOption\": \"RANKED_UNFILTERED\"\n}\n\n# หลักการสำคัญในการใช้ Tools:\n1. **startUrls ต้องเป็น array ของ objects** เสมอ โดยแต่ละ object มี key \"url\"\n2. **resultsLimit เป็น integer** ไม่ใช่ string\n3. **captionText และ includeNestedComments เป็น boolean** (true/false)\n4. **วันที่ใช้ format YYYY-MM-DD** หรือ relative format เช่น \"7 days\"\n\n# การจัดการข้อมูล Comments และ URLs (สำคัญมาก)\n1. **ย่อ URLs ยาวๆ**: หาก comment มี video link หรือ URL ที่มี query parameters ยาว ให้ย่อเป็น \"facebook.com/video/[ID]\" หรือ \"[ชื่อเว็บ]/...\"\n2. **จำกัดความยาว comment**: แสดงเฉพาะส่วนสำคัญของ comment ไม่เกิน 100 ตัวอักษร\n3. **ตัดส่วนที่ไม่จำเป็น**: ไม่ต้องแสดง query parameters หรือ tracking codes ใน URL\n4. **สรุปสั้นๆ**: หาก comment ยาวหรือมี URL เยอะ ให้สรุปเป็น \"คอมเมนต์เกี่ยวกับ [หัวข้อ]\" แทน\n5. **หลีกเลี่ยง output ว่าง**: หากพบข้อมูลที่ซับซ้อน ให้สรุปสั้นๆ แทนที่จะไม่ตอบ\n\n# การจัดการข้อผิดพลาด (Error Handling)\nหากเครื่องมือส่งคืนข้อผิดพลาด:\n1. อธิบายปัญหาและสาเหตุที่เป็นไปได้\n2. เสนอทางเลือกหรือวิธีแก้ไขหากมี\n3. ระบุข้อจำกัดของข้อมูลที่ได้รับชัดเจน\n4. ไม่สร้างข้อมูลสมมติหรือคาดเดา\n\n# คำถามจากผู้ใช้\n{{$json[\"original_question\"]}}\n\n**หมายเหตุสำคัญ**: ต้องปฏิบัติตามกระบวนการ ReAct อย่างเคร่งครัด ห้ามข้ามขั้นตอนหรือให้คำตอบก่อนมีข้อมูลครบถ้วน ต้อง list tools ก่อนใช้งานทุกครั้ง และต้องใช้ parameters format ให้ถูกต้องตาม schema **ห้าม output เป็นค่าว่างเมื่อพบ URL ยาวหรือข้อมูลซับซ้อน ให้สรุปสั้นๆ แทน**",
+        "options": {
+          "systemMessage": "=You are a Facebook Data Assistant. After using tools and getting results, always provide a complete response based on the tool outputs. Never return empty output as following:\n[\n  {\n    \"output\": \"\"\n  }\n]",
+          "maxIterations": 30
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -440,
+        220
+      ],
+      "id": "c3318616-6349-44fd-bc05-2252609214bd",
+      "name": "Facebook Scraper Agent ",
+      "alwaysOutputData": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\n// ตรวจสอบว่าเป็นรอบแรกหรือไม่\nif (!staticData.current_session_data) {\n    // รอบแรก: เก็บข้อมูลทั้งหมดจาก input\n    staticData.current_session_data = {\n        original_question: $json[\"chatInput\"],\n        sessionId: $json[\"userId\"] || \"default-session\",\n        startTime: new Date().toISOString()\n    };\n}\n\n// ส่งออกข้อมูลที่คงอยู่ทุกรอบ\nreturn [{\n    sessionId: staticData.current_session_data.sessionId,\n    original_question: staticData.current_session_data.original_question\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        220
+      ],
+      "id": "dde27b59-ac35-4373-9dac-eaefd2a167a9",
+      "name": "Question memorizer"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-20b",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-20b"
+        },
+        "options": {
+          "maxTokens": 8000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -520,
+        440
+      ],
+      "id": "69f01d56-5131-4de7-a834-2e2cfed8bd59",
+      "name": "OpenAI Chat Model by OpenRouter",
+      "credentials": {
+        "openAiApi": {
+          "id": "ndqe7eBGYIr5kLsg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "ใช้ดึงข้อมูลคอมเมนต์จากโพสต์ใน Facebook รวมถึงข้อความ, เวลา, จำนวนไลค์, และข้อมูลผู้แสดงความคิดเห็น",
+        "operation": "executeTool",
+        "toolName": "apify-slash-facebook-comments-scraper",
+        "toolParameters": "={{ (function() {\n   const paramsString = $fromAI('Tool_Parameters');\n   const params = JSON.parse(paramsString);\n   \n   return {\n     startUrls: params.startUrls || (Array.isArray(params.start_urls) \n       ? params.start_urls.map(url => ({ url: url }))\n       : [{ url: params.start_urls }]),\n     resultsLimit: params.resultsLimit || params.results_limit || 50,\n     includeNestedComments: params.includeNestedComments || params.include_nested_comments || false,\n     viewOption: params.viewOption || params.view_option || \"RANKED_UNFILTERED\"\n   };\n})() }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        440
+      ],
+      "id": "dfd7efa4-2556-4bce-98dc-11cb97b9c50b",
+      "name": "MCP Client for scraping comments",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "vD0aixLUWsgjIOGU",
+          "name": "MCP Client (STDIO) for native mcp server apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-120b",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-120b"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        440
+      ],
+      "id": "f0d7a350-c69f-4210-87ff-02057b6fcbb4",
+      "name": "OpenAI Chat Model by OpenRouter-1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ndqe7eBGYIr5kLsg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// รับ input จาก node ก่อนหน้า\nconst input = items[0].json;\n\n// ดึงสตริงจากฟิลด์ output\nlet raw = input.output;\n\n// เผื่อกรณี output ไม่ใช่สตริง (แต่โดยรูปนี้เป็นสตริง)\nif (typeof raw !== 'string') {\n  raw = JSON.stringify(raw);\n}\n\n// ตัดส่วนเกริ่นนำออก แล้วเก็บเฉพาะ JSON object ระหว่าง { ... }\nconst start = raw.indexOf('{');\nconst end = raw.lastIndexOf('}');\nif (start === -1 || end === -1) {\n  throw new Error('ไม่พบ JSON object ในข้อความ output');\n}\nconst jsonString = raw.slice(start, end + 1);\n\n// แปลงเป็นออบเจกต์\nconst data = JSON.parse(jsonString);\n\n// ป้องกันกรณีไม่มี pages หรือ posts\nconst pages = Array.isArray(data.pages) ? data.pages : [];\nconst flattened = [];\n\n// ไส้ flatten\nfor (const page of pages) {\n  const posts = Array.isArray(page.posts) ? page.posts : [];\n  for (const post of posts) {\n    flattened.push({\n      page_name: page.page_name ?? null,\n      post_time: post.post_time ?? null,\n      text: post.text ?? \"\",\n      likes: post.likes ?? 0,\n      comments_count: post.comments_count ?? 0,\n      shares: post.shares ?? 0,\n      media_type: post.media_type ?? null,\n      total_likes: page.total_likes ?? 0,\n      total_comments: page.total_comments ?? 0,\n      total_shares: page.total_shares ?? 0,\n      total_engagement: page.total_engagement ?? 0,\n      average_engagement: page.average_engagement ?? 0,\n      // ถ้าอยากพก insights / recommendations มาทุกแถวด้วย ใส่ 2 บรรทัดนี้:\n      insights: Array.isArray(data.insights) ? data.insights : [],\n      recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],\n    });\n  }\n}\n\n// ส่งออกเป็น n8n items\nreturn flattened.map(row => ({ json: row }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        400
+      ],
+      "id": "ceff94de-7765-4cd5-96ad-cdc7e198de7d",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "social",
+        "fields": "=page_name,post_time,text,likes,comments_count,shares,media_type",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        380
+      ],
+      "id": "a30abe40-0b1c-4e19-a09d-09d2e4e74034",
+      "name": "MongoDB",
+      "credentials": {
+        "mongoDb": {
+          "id": "PWZYTHEMWclPQLzk",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "b605bcd9-1609-407f-b357-bff0f4bb2867",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -1460,
+        40
+      ],
+      "description": "This node triggers your content generation workflow on a schedule. Default is every 5 days at 9 AM, but you can adjust this to daily, weekly, or any custom schedule that fits your content strategy. The workflow will start automatically at the specified time.",
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code node สำหรับสุ่มเลือกคำถาม\nconst questions = [\n  \"ดึงโพส https://www.facebook.com/nationtv และ https://www.facebook.com/thaipbs มาเปรียบเทียบกัน 1 โพสล่าสุด พร้อม comment 5 comment\",\n  \"วิเคราะห์ engagement ของ https://www.facebook.com/natenapa.nate โพส 5 โพสล่าสุด\",\n  \"ตรวจสอบ sentiment ของคอมเมนต์ใน https://www.facebook.com/imcinstitute โพส 3 โพสล่าสุด\",\n  \"เปรียบเทียบ engagement ระหว่าง https://www.facebook.com/natenapa.nate และ https://www.facebook.com/Lost.Somewhere.Together ภายใต้ 5 โพสล่าสุด\"\n];\n\n// สุ่มเลือกคำถาม หรือใช้แบบเรียงตามลำดับ\nconst currentHour = new Date().getHours();\nconst questionIndex = currentHour % questions.length; // หมุนเวียนตามชั่วโมง\nconst selectedQuestion = questions[questionIndex];\n\n// สร้าง session ID แบบ unique\nconst sessionId = `facebook-analysis-${new Date().toISOString().split('T')[0]}-${questionIndex}`;\n\n// ส่งข้อมูลไปยัง Agent\nreturn [{\n  json: {\n    chatInput: selectedQuestion,\n    sessionId: sessionId, // เพิ่ม sessionId ตรงนี้\n    timestamp: new Date().toISOString(),\n    questionIndex: questionIndex,\n    executionType: \"scheduled\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1240,
+        40
+      ],
+      "id": "8cb0c8a3-70ba-45d3-8e5b-443470e31f22",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Facebook Scraper Agent ",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Question memorizer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Data Engineer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Engineer Agent": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client for scraping posts": {
+      "ai_tool": [
+        [
+          {
+            "node": "Facebook Scraper Agent ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Scraper Agent ": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question memorizer": {
+      "main": [
+        [
+          {
+            "node": "Facebook Scraper Agent ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model by OpenRouter": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Facebook Scraper Agent ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client for scraping comments": {
+      "ai_tool": [
+        [
+          {
+            "node": "Facebook Scraper Agent ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model by OpenRouter-1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Data Engineer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Question memorizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5b5bc86a-6a99-4e4b-b145-57d339d50175",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd8952abd603875580bc5d2a35467376bc26ea1bd5e112ddd08929b7454b352e"
+  },
+  "id": "LiulSo6keI5X2hHT",
+  "tags": [
+    {
+      "createdAt": "2025-10-26T09:34:16.976Z",
+      "updatedAt": "2025-10-26T09:34:16.976Z",
+      "id": "MEImHCjYMukmlGmX",
+      "name": "stable"
+    },
+    {
+      "createdAt": "2025-10-28T00:27:22.467Z",
+      "updatedAt": "2025-10-28T00:27:22.467Z",
+      "id": "NYNDHn7Nmjy5Zj1l",
+      "name": "webinar"
+    },
+    {
+      "createdAt": "2025-10-28T00:27:22.454Z",
+      "updatedAt": "2025-10-28T00:27:22.454Z",
+      "id": "RtCdfSHfHFpc0uGB",
+      "name": "in-progress"
+    },
+    {
+      "createdAt": "2025-10-28T00:28:39.682Z",
+      "updatedAt": "2025-10-28T00:28:39.682Z",
+      "id": "XccVedZUidF0zgJv",
+      "name": "tested@10Sep2025"
+    },
+    {
+      "createdAt": "2025-10-28T00:27:22.464Z",
+      "updatedAt": "2025-10-28T00:27:22.464Z",
+      "id": "jypVjtQBFYL5oTVn",
+      "name": "tested@8Sep2025"
+    },
+    {
+      "createdAt": "2025-10-28T08:24:08.214Z",
+      "updatedAt": "2025-10-28T08:24:08.214Z",
+      "id": "mIcq3VWvFb3kSida",
+      "name": "tested@28-10-2025"
+    },
+    {
+      "createdAt": "2025-10-28T00:27:22.458Z",
+      "updatedAt": "2025-10-28T00:27:22.458Z",
+      "id": "mkA5HEA8BPFSD5qV",
+      "name": "tested@17Sep2025"
+    }
+  ]
+}
